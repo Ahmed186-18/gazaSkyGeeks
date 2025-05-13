@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        #searchInput {
+            padding: 8px;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .quote-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        .error-message {
+            color: red;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Quote Search</h1>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search quotes...">
+    </div>
+
+    <div id="errorMessage" class="error-message"></div>
+    <div>
+        <ul id="quotesList"></ul>
+    </div>
+
+    <script>
+        let allQuotes = [];
+        const quotesListElement = document.getElementById('quotesList');
+        const searchInput = document.getElementById('searchInput');
+        const errorMessage = document.getElementById('errorMessage');
+
+        async function fetchQuotes() {
+            try {
+                const response = await fetch('https://dummyjson.com/quotes');
+                const data = await response.json();
+                allQuotes = data.quotes;
+                displayQuotes(allQuotes);
+            } catch (error) {
+                errorMessage.textContent = 'Error: Failed to load quotes. Please try again .';
+            }
+        }
+
+        function displayQuotes(quotes) {
+            quotesListElement.innerHTML = quotes
+                .map(quote => `
+                    <li class="quote-item">
+                        ${quote.quote}
+                    </li>
+                `).join('');
+        }
+
+        function filterQuotes(searchText) {
+            const filteredQuotes = allQuotes.filter(quote =>
+                quote.quote.toLowerCase().includes(searchText.toLowerCase())
+            );
+            displayQuotes(filteredQuotes);
+        }
+
+        searchInput.addEventListener('input', e => {
+            filterQuotes(e.target.value);
+        });
+
+        fetchQuotes();
+    </script>
+</body>
+
+</html>
